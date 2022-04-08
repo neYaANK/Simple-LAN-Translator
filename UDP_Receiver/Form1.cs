@@ -22,6 +22,7 @@ namespace UDP_Receiver
         private CancellationTokenSource _source = new CancellationTokenSource();
         private DirectSoundOut _waveOut;
         private BufferedWaveProvider _prov;
+        bool _isMuted = false;
         public Form1()
         {
             InitializeComponent();
@@ -37,12 +38,9 @@ namespace UDP_Receiver
                 _prov = new BufferedWaveProvider(new WaveFormat(44100, 1));
                 _waveOut.Init(_prov);
 
-
-
-
                 ReceiveVideoAsync();
                 ReceiveSoundAsync();
-                _waveOut.Play();
+                if(!_isMuted)_waveOut.Play();
 
                 buttonReceive.Text = "Stop";
 
@@ -112,8 +110,7 @@ namespace UDP_Receiver
                         byte[] buff = client.Receive(ref ep);
 
                         //Debug.WriteLine(buff.Length);
-
-                        _prov.AddSamples(buff, 0, buff.Length);
+                        if(!_isMuted)_prov.AddSamples(buff, 0, buff.Length);
 
                         client.Close();
 
@@ -128,11 +125,36 @@ namespace UDP_Receiver
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(_waveOut!=null)
-            _source.Cancel();
-            _waveOut.Stop();
-            _prov.ClearBuffer();
-            _waveOut.Dispose();
+            if (_waveOut != null)
+            {
+                _source.Cancel();
+                _waveOut.Stop();
+                _prov.ClearBuffer();
+                _waveOut.Dispose();
+            }
+        }
+
+        private void buttonMute_Click(object sender, EventArgs e)
+        {
+            if (buttonMute.Text == "Sound off")
+            {
+                _isMuted = true;
+                if (_waveOut != null)
+                {
+                    _waveOut.Stop();
+                }
+                buttonMute.Text = "Sound on";
+            }
+            else
+            {
+                _isMuted = false;
+                if (_waveOut != null)
+                {
+                    _prov.ClearBuffer();
+                    _waveOut.Play();
+                }
+                buttonMute.Text = "Sound off";
+            }
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.buttonMute = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonReceive = new System.Windows.Forms.Button();
             this.TextBox_Port = new System.Windows.Forms.TextBox();
@@ -36,6 +37,16 @@
             this.TextBox_SoundPort = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // buttonMute
+            // 
+            this.buttonMute.Location = new System.Drawing.Point(551, 14);
+            this.buttonMute.Name = "buttonMute";
+            this.buttonMute.Size = new System.Drawing.Size(125, 29);
+            this.buttonMute.TabIndex = 6;
+            this.buttonMute.Text = "Sound off";
+            this.buttonMute.UseVisualStyleBackColor = true;
+            this.buttonMute.Click += new System.EventHandler(this.buttonMute_Click);
             // 
             // pictureBox1
             // 
@@ -95,6 +106,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.buttonMute);
             this.Controls.Add(this.TextBox_SoundPort);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -118,5 +130,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox TextBox_SoundPort;
+        private System.Windows.Forms.Button buttonMute;
     }
 }

@@ -23,7 +23,7 @@ namespace UDP_WinForm
     {
         private VideoCaptureDevice _webcam;
         private CancellationTokenSource _source = new CancellationTokenSource();
-        private IWaveIn _waveIn;
+        private WaveIn _waveIn;
         private BufferedWaveProvider _provider;
         private DirectSoundOut _waveOut;
 
@@ -44,7 +44,7 @@ namespace UDP_WinForm
                     ComboBoxDevices.Items.Add(device.Name);
                 }
             }
-            MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+            //MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -60,9 +60,9 @@ namespace UDP_WinForm
             {
                 if (device.Name == selectedDevice)
                 {
-                    _webcam = new VideoCaptureDevice(device.MonikerString);                    
+                    _webcam = new VideoCaptureDevice(device.MonikerString);
                 }
-                
+
             }
         }
         private void button_StartCam_Click(object sender, EventArgs e)
@@ -73,13 +73,15 @@ namespace UDP_WinForm
                 {
                     ((Button)sender).Text = "Start";
                     _webcam.SignalToStop();
-                   
-                    
+
+
                 }
                 else
                 {
                     _webcam.Start();
+
                     VideoSource_Pbox.VideoSource = _webcam;
+
                     ((Button)sender).Text = "Stop";
                 }
             }
@@ -99,9 +101,9 @@ namespace UDP_WinForm
                     _webcam.SignalToStop();
                     _webcam.WaitForStop();
                 }
-                
+
             }
-            if (Button_Microphone.Text=="Stop")
+            if (Button_Microphone.Text == "Stop")
             {
                 _waveIn.StopRecording();
                 _waveOut.Stop();
@@ -121,15 +123,16 @@ namespace UDP_WinForm
 
 
                 Button_Stream.Text = "Stop";
-            }else if (Button_Stream.Text == "Stop")
+            }
+            else if (Button_Stream.Text == "Stop")
             {
                 _webcam.NewFrame -= SendVideo;
-                _waveIn.DataAvailable-=SendSound;
+                _waveIn.DataAvailable -= SendSound;
 
 
                 Button_Stream.Text = "Start";
             }
-            
+
 
         }
         private void SendVideo(object sender, NewFrameEventArgs eventArgs)
@@ -142,7 +145,7 @@ namespace UDP_WinForm
                 MemoryStream ms = new MemoryStream();
                 //eventArgs.Frame.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                 var param = new EncoderParameters();
-                param.Param =new EncoderParameter[]{new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L - 50L)};
+                param.Param = new EncoderParameter[] { new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L - 50L) };
 
                 eventArgs.Frame.Save(ms, ImageCodecInfo.GetImageEncoders()[1], param);
                 byte[] bmpBytes = ms.ToArray();
@@ -162,6 +165,9 @@ namespace UDP_WinForm
         {
             if (Button_Microphone.Text == "Start")
             {
+                
+
+
                 _waveIn = new WaveIn();
                 _waveIn.WaveFormat = new WaveFormat(44100, 1);
                 _waveIn.DataAvailable += OnDataAvailable;
@@ -173,8 +179,7 @@ namespace UDP_WinForm
 
                 _waveIn.StartRecording();
                 Button_Microphone.Text = "Stop";
-
-                //waveFile = new WaveFileWriter("Test00.wav", waveIn.WaveFormat);
+                
             }
             else
             {
@@ -203,9 +208,8 @@ namespace UDP_WinForm
             {
                 client = new UdpClient();
                 MemoryStream ms = new MemoryStream();
-                //eventArgs.Frame.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                
-                ms.Write(e.Buffer,0, e.BytesRecorded);
+
+                ms.Write(e.Buffer, 0, e.BytesRecorded);
                 byte[] bmpBytes = ms.ToArray();
                 client.Send(bmpBytes, bmpBytes.Length, new System.Net.IPEndPoint(System.Net.IPAddress.Parse(TextBox_Ip.Text), int.Parse(TextBox_SoundPort.Text)));
 
@@ -217,7 +221,7 @@ namespace UDP_WinForm
             {
                 Debug.WriteLine(ex.Message);
             }
+
         }
     }
 }
-    
